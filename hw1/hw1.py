@@ -10,6 +10,7 @@
 import sys
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QApplication
+import cv2 as cv
 
 class Ui_Dialog(object):
     def setupUi(self, Dialog):
@@ -24,20 +25,22 @@ class Ui_Dialog(object):
         self.frame.setObjectName("frame")
         
         self.pushButton = QtWidgets.QPushButton(self.frame)
-        self.pushButton.clicked.connect(self.onClick)
+        self.pushButton.clicked.connect(self.image_show)
         self.pushButton.setGeometry(QtCore.QRect(10, 60, 161, 25))
         self.pushButton.setObjectName("pushButton")
         
         self.pushButton_2 = QtWidgets.QPushButton(self.frame)
-        self.pushButton_2.clicked.connect(self.onClick2)
+        self.pushButton_2.clicked.connect(self.colorSeparation)
         self.pushButton_2.setGeometry(QtCore.QRect(10, 130, 161, 25))
         self.pushButton_2.setObjectName("pushButton_2")
         
         self.pushButton_3 = QtWidgets.QPushButton(self.frame)
+        self.pushButton_3.clicked.connect(self.imageflipping)
         self.pushButton_3.setGeometry(QtCore.QRect(10, 200, 161, 25))
         self.pushButton_3.setObjectName("pushButton_3")
         
         self.pushButton_4 = QtWidgets.QPushButton(self.frame)
+        self.pushButton_4.clicked.connect(self.imageblending)
         self.pushButton_4.setGeometry(QtCore.QRect(10, 260, 161, 25))
         self.pushButton_4.setObjectName("pushButton_4")
         
@@ -127,11 +130,43 @@ class Ui_Dialog(object):
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
-    def onClick(self):
-        word=self.lineEdit.text() 
-        print(word)
-    def onClick2(self):
-        print('hey~') 
+    def image_show(self):
+        img=cv.imread("Uncle_Roger.jpg") 
+        if img is None:
+            sys.exit("Could not read the image")         
+        cv.imshow("uncle_roger",img)
+        print("height:",img.shape[0])
+        print("width:",img.shape[1])
+    def colorSeparation(self):
+        img=cv.imread("Flower.jpg") 
+        if img is None:
+            sys.exit("Could not read the image") 
+        b=img.copy()
+        b[:,:,1]=0   #set other channels to zero
+        b[:,:,2]=0
+  
+        g=img.copy()
+        g[:,:,0]=0   #set other channels to zero
+        g[:,:,2]=0
+  
+        r=img.copy() 
+        r[:,:,0]=0   #set other channels to zero
+        r[:,:,1]=0
+         
+        cv.imshow("blue",b);
+        cv.imshow("green",g);
+        cv.imshow("red",r);
+    def imageflipping(self):    
+        img=cv.imread('Uncle_Roger.jpg')
+        f=cv.flip(img,1)
+        cv.imshow("result",f)
+    def imageblending(self):
+        def update(x):
+            print(x)
+        img=cv.imread("Uncle_Roger.jpg")
+        cv.namedWindow('uncle')               
+        cv.createTrackbar('alpha','uncle',0,100,update) 
+        cv.imshow('uncle',img)
     def retranslateUi(self, Dialog):
         _translate = QtCore.QCoreApplication.translate
         Dialog.setWindowTitle(_translate("Dialog", "Opencvdl2020 HW1"))
